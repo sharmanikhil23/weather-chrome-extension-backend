@@ -10,7 +10,8 @@ environ.Env.read_env()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.home),
+    path('',views.main),
+    path('getweather/',views.home),
     path('',include('geo_location.urls')),
     path('',include('weather.urls'))
 ]

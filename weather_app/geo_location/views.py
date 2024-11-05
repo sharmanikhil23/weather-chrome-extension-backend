@@ -1,11 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import requests
-import environ
+from django.conf import settings
 
-# Initialize the environment variables
-env = environ.Env()
-environ.Env.read_env()
 
 def getGeolocation(request):
     location = request.GET.get('location')  
@@ -13,7 +10,7 @@ def getGeolocation(request):
         return JsonResponse({'message': "Location parameter is required", 'status': 400}, status=400)
 
     try:
-        url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{location}.json?access_token={env("MAPBOXKEY")}'
+        url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{location}.json?access_token={settings.MAPBOXKEY}'
         response = requests.get(url)
 
         if response.status_code == 200:

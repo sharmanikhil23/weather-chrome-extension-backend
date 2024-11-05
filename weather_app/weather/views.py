@@ -1,8 +1,6 @@
 from django.http import HttpResponse, JsonResponse
 import requests
-import environ
-env = environ.Env()
-environ.Env.read_env()
+from django.conf import settings
 
 # Create your views here.
 def getWeather(request):
@@ -11,7 +9,7 @@ def getWeather(request):
         latitide=request.GET.get('latitude')
         longitude=request.GET.get('longitude')
 
-        url = f'http://api.weatherapi.com/v1/forecast.json?key={env('WEATHER_API_KEY')}&q={latitide},{longitude}&days=4&aqi=yes&alerts=yes';
+        url = f'http://api.weatherapi.com/v1/forecast.json?key={settings.WEATHER_API_KEY}&q={latitide},{longitude}&days=4&aqi=yes&alerts=yes';
         
         response=requests.get(url)
         if (response.status_code==200):
