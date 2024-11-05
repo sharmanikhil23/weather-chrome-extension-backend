@@ -1,0 +1,10 @@
+asgiref    
+certifi       
+charset-nor
+Django     
+django-envi
+idna     
+pip         
+requests   
+sqlparse   
+urllib3    
