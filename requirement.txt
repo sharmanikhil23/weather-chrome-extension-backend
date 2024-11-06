@@ -8,3 +8,4 @@ pip
 requests   
 sqlparse   
 urllib3    
+httpx
