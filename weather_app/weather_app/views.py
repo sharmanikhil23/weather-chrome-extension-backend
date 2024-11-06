@@ -21,6 +21,7 @@ def home(request):
             return JsonResponse(response.json())
     except Exception as e:
         print(f'{e}')
+        return JsonResponse(e)
 
 def main(request):
     return HttpResponse("Your server is working")
