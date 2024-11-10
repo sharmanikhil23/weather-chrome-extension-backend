@@ -1,41 +1,39 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-import requests
+import httpx
 from django.conf import settings
 
-
-def getGeolocation(request):
-    location = request.GET.get('location')  
+async def getGeolocation(location):  
     if not location:
-        return JsonResponse({'message': "Location parameter is required", 'status': 400}, status=400)
+        return {'message': "Location parameter is required", 'status': 400}
 
     try:
         url = f'https://api.mapbox.com/geocoding/v5/mapbox.places/{location}.json?access_token={settings.MAPBOXKEY}'
-        response = requests.get(url)
+        
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url)
 
+       
         if response.status_code == 200:
             data = response.json()
-
+            
             if len(data.get('features', [])) == 0:
-                return JsonResponse({'message': "Incorrect location provided", 'status': 422}, status=422)
+                return {'message': "Incorrect location provided", 'status': 422}
+            
             # Extract latitude and longitude
             latitude = data['features'][0]['center'][1]
             longitude = data['features'][0]['center'][0]
-            
             # Return as a JSON response
-            return JsonResponse({'latitude': latitude, 'longitude': longitude, 'status': 200}, status=200)
+            return {'latitude': latitude, 'longitude': longitude, 'status': 200}
         
         elif response.status_code == 401:
-            return JsonResponse({'status': 401, 'message': 'Unauthorized access to the provider'}, status=401)
+            return {'status': 401, 'message': 'Unauthorized access to the provider'}
         
         # For other unexpected status codes
-        return JsonResponse({'status': response.status_code, 'message': 'Unable to fetch geolocation data'}, status=response.status_code)
+        return {'status': response.status_code, 'message': 'Unable to fetch geolocation data'}
 
-    except requests.exceptions.RequestException as e:
+    except httpx.RequestError as e:
         print("Request error:", e)
-        return JsonResponse({'status': 422, 'message': 'Request error occurred'}, status=422)
+        return {'status': 422, 'message': 'Request error occurred'}
     
     except Exception as e:
         print("Unexpected error:", e)
-        return JsonResponse({'status': 500, 'message': 'Unexpected error occurred'}, status=500)
-
+        return {'status': 500, 'message': 'Unexpected error occurred'}

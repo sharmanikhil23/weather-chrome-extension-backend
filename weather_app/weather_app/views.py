@@ -1,26 +1,25 @@
-from django.shortcuts import render
-from django.urls import reverse
-from django.http import HttpResponse, JsonResponse
-import requests
+import asyncio
+from django.http import JsonResponse, HttpResponse
+from .location import getGeolocation
+from .weather import getWeather
 
-
-def home(request):
-    location=request.GET.get('location')
+# Make the home view asynchronous
+async def home(request):
+    location = request.GET.get('location')
+    if not location:
+        return JsonResponse({'message': "Location parameter is required", 'status': 400}, status=400)
     
-    try:
-        coordinates_url =  request.build_absolute_uri('/geolocation/' + f'?location={location}')
-        response = requests.get(coordinates_url)
-        print(response)
-        if(response.status_code==200):
-            data=response.json()
-            weather_url=request.build_absolute_uri('/weather/' + f'?latitude={data["latitude"]}&longitude={data["longitude"]}')
-            response = requests.get(weather_url)
-            data=response.json()
-            return JsonResponse(data)
-        else:
-            return JsonResponse(response.json())
-    except Exception as e:
-        print(f'{e}')
+    location=await getGeolocation(location)
+    
+    if location.get('status') != 200:
+        print("Reached here")
+        return JsonResponse(location)
+    else:
+        latitude = location.get('latitude')
+        longitude = location.get('longitude')
+        weather=await getWeather(latitude,longitude)
+        return JsonResponse(weather)
 
+# Optional: Main health check view
 def main(request):
     return HttpResponse("Your server is working")
