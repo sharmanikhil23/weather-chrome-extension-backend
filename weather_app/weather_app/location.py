@@ -18,7 +18,6 @@ def getGeolocation(request):
 
             if len(data.get('features', [])) == 0:
                 return JsonResponse({'message': "Incorrect location provided", 'status': 422}, status=422)
-                print("still herer")
             # Extract latitude and longitude
             latitude = data['features'][0]['center'][1]
             longitude = data['features'][0]['center'][0]
