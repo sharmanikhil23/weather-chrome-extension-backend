@@ -39,7 +39,9 @@ async def getGeolocation(request):
             return JsonResponse({'status': response.status_code, 'message': 'Unable to fetch geolocation data'}, status=response.status_code)
 
     except httpx.RequestError as e:
+        print("Request error:", e)
         return JsonResponse({'status': 422, 'message': 'Request error occurred'}, status=422)
     
     except Exception as e:
+        print("Unexpected error:", e)
         return JsonResponse({'status': 500, 'message': 'Unexpected error occurred'}, status=500)

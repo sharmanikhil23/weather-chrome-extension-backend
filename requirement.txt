@@ -1,5 +1,6 @@
 asgiref    
 certifi       
+charset-nor
 Django     
 django-envi
 idna     
